@@ -1,15 +1,16 @@
 apiVersion: apps/v1 
-kind: Deployment 
+kind: Deployment
 metadata: 
   name: frontend-deployment 
   labels: 
-    app: frontend
+    app: frontend 
+
 spec: 
   replicas: 2
   strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
+    type: RollingUpdate 
+    rollingUpdate: 
+      maxSurge: 1 
       maxUnavailable: 0
   selector: 
     matchLabels: 
@@ -20,15 +21,16 @@ spec:
         app: frontend
     spec: 
       containers: 
-        - name: frontend-container 
-          image: 822920903800.dkr.ecr.us-west-2.amazonaws.com/frontend:latest
+        - name: frontend-container
+          image: nginx:latest
           ports: 
             - containerPort: 80
-          
+        
           resources: 
             requests: 
               cpu: "100m"
-              memory: "128Mi"
+              memory: "64Mi"
             limits: 
               cpu: "200m"
-              memory: "256Mi"
+              memory: "128Mi"
+    

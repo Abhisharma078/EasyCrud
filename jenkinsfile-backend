@@ -84,5 +84,13 @@ pipeline {
                 '''
             }
         }
+
+        stage('Image Update'){
+            steps{
+                sh '''
+                    sed -i "s|image: .*|image: ${ECR_REPO}:${BUILD_NUMBER}|" k8s/backend/backend-deployment.yaml
+                '''
+            }
+        }
     }
 }
