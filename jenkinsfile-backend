@@ -36,5 +36,23 @@ pipeline {
                 sh 'aws s3 cp backend/target/*.jar s3://mayurcbz.spaceee/Artifacts/'
             }
         }
+
+        stage('SonarQube Analysis'){
+            steps{
+               dir('backend'){
+                  withSonarQubeEnv('sonar'){
+                    sh 'mvn sonar:sonar'
+                  }
+               }
+            }
+        }
+
+        stage('Quality Gates'){
+            steps{
+                timeout(time: 5, unit: 'MINUTES'){
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
     }
 }
