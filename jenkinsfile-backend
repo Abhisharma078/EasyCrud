@@ -9,6 +9,7 @@ pipeline {
 
     environment{
         MY_AWS_CRED = credentials('aws-cred')
+        ECR_REPO = '419819289041.dkr.ecr.us-west-2.amazonaws.com/backend'
     }
 
     stages{
@@ -63,6 +64,16 @@ pipeline {
                         docker images
                     '''
                 }
+            }
+        }
+
+        stage('Push Image to ECR'){
+            steps{
+                sh '''
+                    aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 419819289041.dkr.ecr.us-west-2.amazonaws.com
+                    docker tag backend:${BUILD_NUMBER} ${ECR_REPO}:${BUILD_NUMBER}
+                    docker push ${ECR_REPO}:${BUILD_NUMBER}
+                '''
             }
         }
     }
