@@ -32,6 +32,14 @@ pipeline {
             }
         }
 
+        stage('Owasp'){
+            steps{
+                dir('backend'){
+                    sh 'mvn org.owasp:dependency-check-maven:check'
+                }
+            }
+        }
+
         stage('Artifacts to S3'){
             steps{
                 sh 'aws s3 cp backend/target/*.jar s3://mayurcbz.spaceee/Artifacts/'
