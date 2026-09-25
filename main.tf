@@ -1,6 +1,12 @@
 // tf file for eks cluster
 
 terraform {
+  backend "s3" {
+    bucket = "mayurcbz.spaceee"
+    key    = "eks/terraform.tfstate"
+    region = "us-west-2"
+  }
+
   required_version = ">= 1.3"
   required_providers {
     aws = {
