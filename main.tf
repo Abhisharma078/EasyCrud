@@ -2,9 +2,9 @@
 
 terraform {
   backend "s3" {
-    bucket = "mayurcbz.spaceee"
+    bucket = "abhicloud.online"
     key    = "eks/terraform.tfstate"
-    region = "us-west-2"
+    region = "ap-south-1"
   }
 
   required_version = ">= 1.3"
@@ -17,7 +17,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-west-2"
+  region = "ap-south-1"
 }
 
 data "aws_vpc" "default" { // Fetch default VPC
@@ -26,7 +26,7 @@ data "aws_vpc" "default" { // Fetch default VPC
 
 variable "cluster_name" { // Variable for cluster name
   type    = string
-  default = "my-eks-cluster-mayur"
+  default = "my-eks-cluster"
 }
 
 data "aws_subnets" "default" { // Fetch  all subnets in the default VPC

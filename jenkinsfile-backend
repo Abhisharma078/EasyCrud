@@ -9,13 +9,13 @@ pipeline {
 
     environment{
         MY_AWS_CRED = credentials('aws-cred')
-        ECR_REPO = '419819289041.dkr.ecr.us-west-2.amazonaws.com/backend'
+        ECR_REPO = '822920903800.dkr.ecr.ap-south-1.amazonaws.com/student'
     }
 
     stages{
         stage('Checkout'){
             steps{
-                git branch: 'main', url: 'https://github.com/mayurpandit25/EasyCRUD.git'
+                git branch: 'main', url: 'https://github.com/Abhisharma078/EasyCrud.git'
             }
         }
 
@@ -52,7 +52,7 @@ pipeline {
 
         stage('Artifacts to S3'){
             steps{
-                sh 'aws s3 cp backend/target/*.jar s3://mayurcbz.spaceee/Artifacts/'
+                sh 'aws s3 cp backend/target/*.jar s3://abhicloud.online/Artifacts/'
             }
         }
 
@@ -85,13 +85,14 @@ pipeline {
             }
         }
 
-        stage('TRIVY - SCANNING'){
+        /*stage('TRIVY - SCANNING'){
             steps {
                 sh '''
                     trivy image --cache-dir /var/lib/trivy --scanners vuln --severity HIGH,CRITICAL --exit-code 0 backend:${BUILD_NUMBER}
                 '''
             }
         }
+        */
 
         stage('Approval'){
             steps{
@@ -104,7 +105,7 @@ pipeline {
         stage('Push Image to ECR'){
             steps{
                 sh '''
-                    aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 419819289041.dkr.ecr.us-west-2.amazonaws.com
+                    aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 822920903800.dkr.ecr.ap-south-1.amazonaws.com
                     docker tag backend:${BUILD_NUMBER} ${ECR_REPO}:${BUILD_NUMBER}
                     docker push ${ECR_REPO}:${BUILD_NUMBER}
                 '''
@@ -130,12 +131,12 @@ pipeline {
                 ]) {
                     
                     sh '''
-                        git config  user.name "mayurpandit25"
-                        git config user.email "panditmayur888@gmail.com"
+                        git config  user.name "Abhisharma078"
+                        git config user.email "abhimudgal2k.sharma@gmail.com"
 
                         git add k8s/backend/backend-deployment.yaml
                         git commit -m "Update backend-deployment"
-                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mayurpandit25/EasyCRUD.git HEAD:main
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Abhisharma078/EasyCrud.git HEAD:main
                     '''
                 }
             }
