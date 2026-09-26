@@ -22,7 +22,7 @@ spec:
     spec: 
       containers: 
         - name: backend-container
-          image: 822920903800.dkr.ecr.ap-south-1.amazonaws.com/student:6
+          image: 822920903800.dkr.ecr.ap-south-1.amazonaws.com/student:7
           ports: 
             - containerPort: 8080
         
