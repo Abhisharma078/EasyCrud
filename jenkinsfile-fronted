@@ -1,0 +1,112 @@
+pipeline {
+    agent {
+        label 'worker'
+    }
+
+    tools{
+        nodejs 'nodejs'
+    }
+
+    environment{
+        MY_AWS_CRED = credentials('aws-cred')
+        ECR_REPO = '822920903800.dkr.ecr.ap-south-1.amazonaws.com/fronted'
+    }
+
+
+    stages{
+        stage('Checkout'){
+            steps {
+                git branch: 'main', credentialsId: 'github-cred', url: 'https://github.com/Abhisharma078/EasyCrud.git'
+            }
+        }
+
+        stage('Build-frontend'){
+            steps{
+                dir('frontend'){
+                    sh '''
+                        npm install 
+                        npm run build
+                    '''
+                }
+            }
+            post{
+                success{
+                    archiveArtifacts artifacts: 'frontend/dist/**', fingerprint: true
+                }
+            }
+        }
+
+        stage('Artifacts to s3'){
+            steps {
+                dir('frontend'){
+                    sh 'aws s3 sync dist/ s3://abhicloud.online/'
+                }
+            }
+        }
+
+        stage('Docker Build'){
+            steps{
+                dir('frontend'){
+                    sh 'docker build -t frontend:${BUILD_NUMBER} .'
+                }
+            }
+        }
+
+        stage('Push Image to ECR'){
+            steps{
+                sh '''
+                    aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 822920903800.dkr.ecr.ap-south-1.amazonaws.com
+                    docker tag frontend:${BUILD_NUMBER} ${ECR_REPO}:${BUILD_NUMBER}
+                    docker push ${ECR_REPO}:${BUILD_NUMBER}
+
+                '''
+            }
+        }
+        
+        stage('Image Update'){
+            steps{
+                sh '''
+                    sed -i "s|image: .*|image: ${ECR_REPO}:${BUILD_NUMBER}|" k8s/frontend/frontend-deployment.yaml
+                '''
+            }
+        }
+        
+        stage('Push changes to GitHub'){
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: "github-cred",
+                        usernameVariable: "GIT_USERNAME",
+                        passwordVariable: "GIT_PASSWORD"
+                    )
+                ]) {
+                    
+                    sh '''
+                        git config  user.name "Abhisharma078"
+                        git config user.email "abhimudgal2k.sharma@gmail.com"
+
+                        git add k8s/backend/backend-deployment.yaml
+                        git commit -m "Update backend-deployment"
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Abhisharma078/EasyCrud.git HEAD:main
+                    '''
+                }
+            }
+        }
+
+        stage('update argocd'){
+            steps{
+                dir('argocd'){
+                sh '''
+                aws eks update-kubeconfig --name my-eks-cluster --region ap-south-1
+                kubectl apply -f fronted-application.yaml 
+                kubectl apply -f argoc/ingress-application.yaml
+                kubectl get app -n agrocd
+                sleep 20
+                kubectl get pods
+                kubectl get svc -o wide
+                '''
+            }
+        }
+     }
+  }
+}
