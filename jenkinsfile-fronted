@@ -85,7 +85,7 @@ pipeline {
                         git config  user.name "Abhisharma078"
                         git config user.email "abhimudgal2k.sharma@gmail.com"
 
-                        git add k8s/backend/fronted-deployment.yaml
+                        git add k8s/fronted/fronted-deployment.yaml
                         git commit -m "Update fronted-deployment"
                         git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Abhisharma078/EasyCrud.git HEAD:main
                     '''
