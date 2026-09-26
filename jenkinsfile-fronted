@@ -98,8 +98,8 @@ pipeline {
                 dir('argocd'){
                 sh '''
                 aws eks update-kubeconfig --name my-eks-cluster --region ap-south-1
-                kubectl apply -f fronted-application.yaml 
-                kubectl apply -f argoc/ingress-application.yaml
+                kubectl apply -f frontend-application.yaml 
+                kubectl apply -f ingress-application.yaml
                 kubectl get app -n agrocd
                 sleep 20
                 kubectl get pods
