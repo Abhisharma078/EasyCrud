@@ -22,7 +22,7 @@ spec:
     spec: 
       containers: 
         - name: frontend-container
-          image: nginx:latest
+          image: 822920903800.dkr.ecr.ap-south-1.amazonaws.com/fronted:5
           ports: 
             - containerPort: 80
         
